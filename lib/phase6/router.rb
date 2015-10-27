@@ -17,6 +17,7 @@ module Phase6
     # use pattern to pull out route params (save for later?)
     # instantiate controller and call controller action
     def run(req, res)
+      ControllerBase.new(req, res, {}).invoke_action
     end
   end
 
@@ -24,10 +25,13 @@ module Phase6
     attr_reader :routes
 
     def initialize
+      @routes = []
+
     end
 
     # simply adds a new route to the list of routes
     def add_route(pattern, method, controller_class, action_name)
+      @routes << Route.new(pattern, method, controller_class, action_name)
     end
 
     # evaluate the proc in the context of the instance
@@ -38,14 +42,18 @@ module Phase6
     # make each of these methods that
     # when called add route
     [:get, :post, :put, :delete].each do |http_method|
+      define_method(http_method, instance_method(:add_route))
+      end
     end
 
     # should return the route that matches this request
     def match(req)
+      @routes.select { |route| route.matches?(req) }.first
     end
 
     # either throw 404 or call run on a matched route
     def run(req, res)
+      match(req).run(req, res)
     end
   end
 end
