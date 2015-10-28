@@ -3,18 +3,15 @@ require 'uri'
 
 module Phase5
   class Params
-    # use your initialize to merge params from
-    # 1. query string
-    # 2. post body
-    # 3. route params
-    #
-    # You haven't done routing yet; but assume route params will be
-    # passed in as a hash to `Params.new` as below:
+    #  merge params from
+    # 1. query string  ✓
+    # 2. post body     ✓
+    # 3. route params  ✓
     def initialize(req, route_params = {})
       @params = Hash.new
-      @params.merge!(route_params)
-      @params.merge!(parse_www_encoded_form(req.body)) if req.body
       @params.merge!(parse_www_encoded_form(req.query_string)) if req.query_string
+      @params.merge!(parse_www_encoded_form(req.body)) if req.body
+      @params.merge!(route_params)
     end
 
     def [](key)
@@ -36,21 +33,21 @@ module Phase5
     # { "user" => { "address" => { "street" => "main", "zip" => "89436" } } }
     def parse_www_encoded_form(www_encoded_form)
       arr = URI.decode_www_form(www_encoded_form).flatten
-      result = Hash.new
+      result = {}
       Hash[*arr].each do |key, val|
-        arr = parse_key(key)
-        result = get_some_hash(result, arr, val)
+        result = get_some_hash(result, parse_key(key), val)
       end
 
       result
     end
 
+    # recursively dive in to a nested hash and assign/merge key vals
     def get_some_hash(hash, arr, val)
-      # arr = ['user', 'address', 'street']
       if arr.count == 1
         hash[arr.first] = val
       elsif hash[arr.first]
-        hash[arr.first].merge(get_some_hash(hash[arr.first], arr[1..-1], val))
+        scope_hash = get_some_hash(hash[arr.first], arr[1..-1], val)
+        hash[arr.first].merge(scope_hash)
       else
         hash[arr.first] = get_some_hash({}, arr[1..-1], val)
       end
