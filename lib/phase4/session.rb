@@ -6,17 +6,16 @@ module Phase4
     # find the cookie for this app
     # deserialize the cookie into a hash
     def initialize(req)
-      rl_cookie = req.cookies.find { |x| x.name == "_rails_lite_app" }
-      @stuff = rl_cookie.nil? ? {} : JSON.parse(rl_cookie.value)
-
+      sesh_cookie = req.cookies.find { |x| x.name == "_rails_lite_app" }
+      @stuff = sesh_cookie.nil? ? {} : JSON.parse(sesh_cookie.value)
     end
 
     def [](key)
-      @stuff[key]
+      @stuff[key.to_s]
     end
 
     def []=(key, val)
-      @stuff[key] = val
+      @stuff[key.to_s] = val
     end
 
     # serialize the hash into json and save in a cookie
