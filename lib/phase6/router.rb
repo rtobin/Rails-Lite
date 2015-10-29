@@ -12,7 +12,6 @@ module Phase6
     def matches?(req)
       !!(req.path =~ @pattern) &&
         req.request_method.downcase.to_sym == @http_method
-
     end
 
     # use pattern to pull out route params (save for later?)
@@ -59,7 +58,7 @@ module Phase6
     # either throw 404 or call run on a matched route
     def run(req, res)
       route = match(req)
-      if route.nil?
+      if route.nil? or 
         res.status = 404
       else
         route.run(req, res)

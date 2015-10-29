@@ -6,6 +6,7 @@ class Flash
   # deserialize the cookie into a hash
 
   def initialize(req)
+    # if there is a cookie, set it to @stuff_now, it doesn't persist in the future
     flash_cookie = req.cookies.find { |cookie| cookie.name == "_rails_lite_flash" }
     @stuff = {}
     @stuff_now = {}

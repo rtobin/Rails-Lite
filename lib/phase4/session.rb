@@ -1,13 +1,15 @@
 require 'json'
 require 'webrick'
 
+
 module Phase4
   class Session
     # find the cookie for this app
     # deserialize the cookie into a hash
     def initialize(req)
-      sesh_cookie = req.cookies.find { |x| x.name == "_rails_lite_app" }
+      sesh_cookie = req.cookies.find { |cookie| cookie.name == "_rails_lite_app" }
       @stuff = sesh_cookie.nil? ? {} : JSON.parse(sesh_cookie.value)
+
     end
 
     def [](key)

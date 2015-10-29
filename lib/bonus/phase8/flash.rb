@@ -9,7 +9,7 @@ class Flash
     flash_cookie = req.cookies.find { |cookie| cookie.name == "_rails_lite_flash" }
     @stuff = {}
     @stuff_now = {}
-    JSON.parse(cookie.value).each { |key, val| @stuff_now[key] = val } if flash_cookie
+    JSON.parse(cookie.value).each { |key, val| @stuff_now[key.to_s] = val } if flash_cookie
   end
 
   def [](key)
